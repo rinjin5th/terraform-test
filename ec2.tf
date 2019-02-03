@@ -19,8 +19,13 @@ resource "aws_instance" "web" {
   key_name = "iguwo-test-key"
   vpc_security_group_ids = ["${aws_security_group.web.id}"]
   subnet_id = "${element(aws_subnet.iguwo-test-private.*.id, count.index)}"
+  user_data = "${data.template_file.user_data.rendered}"
 
   tags = {
     Name = "${format("iguwo-test-web%02d", count.index + 1)}"
   }
+}
+
+data "template_file" "user_data" {
+  template = "${file("${path.module}/userdata.sh")}"
 }
